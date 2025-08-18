@@ -1,0 +1,50 @@
+
+int findInMountainArray(int target, MountainArray *mountainArr) {
+    int size = length(mountainArr);
+    int low = 1;
+    int high = size - 2;
+    while (low != high) {
+        int testIndex = (low + high) / 2;
+        if (get(mountainArr, testIndex) < get(mountainArr, testIndex + 1)) {
+            low = testIndex + 1;
+        } else {
+            high = testIndex;
+        }
+    }
+
+    int peakIndex = low;
+    low = 0;
+    high = peakIndex;
+    while (low != high) {
+        int testIndex = (low + high) / 2;
+        if (get(mountainArr, testIndex) < target) {
+            low = testIndex + 1;
+        } else {
+            high = testIndex;
+        }
+    } 
+   
+    if (get(mountainArr, low) == target) {
+        return low;
+    }
+
+   
+   
+    low = peakIndex + 1;
+    high = size - 1;
+    while (low != high) {
+        int testIndex = (low + high) / 2;
+        if (get(mountainArr, testIndex) > target) {
+            low = testIndex + 1;
+        } else {
+            high = testIndex;
+        }
+    }
+   
+    if (get(mountainArr, low) == target) {
+        return low;
+    }
+
+    
+    return -1;
+}
