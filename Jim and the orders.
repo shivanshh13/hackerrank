@@ -1,0 +1,26 @@
+int* jimOrders(int Orders_rows, int Orders_columns, int** Orders, int* result_count) {
+    Order* arr = malloc(Orders_rows * sizeof(Order));
+    if (!arr) return NULL;
+
+    for (int i = 0; i < Orders_rows; i++) {
+        arr[i].id = i + 1;
+        arr[i].completion = Orders[i][0] + Orders[i][1];
+    }
+
+    qsort(arr, Orders_rows, sizeof(Order), cmp);
+
+    int* result = malloc(Orders_rows * sizeof(int));
+    if (!result) {
+        free(arr);
+        return NULL;
+    }
+
+    for (int i = 0; i < Orders_rows; i++) {
+        result[i] = arr[i].id;
+    }
+
+    free(arr);
+
+    *result_count = Orders_rows;
+    return result;
+}
