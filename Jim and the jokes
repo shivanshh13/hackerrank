@@ -1,0 +1,11 @@
+  if (base < 2) return -1;             
+    long long result = 0;
+    char s[32];
+    sprintf(s, "%d", num);              
+    for (int i = 0; s[i]; i++) {
+        int digit = s[i] - '0';
+        if (digit < 0 || digit >= base) return -1;
+        result = result * base + digit;
+    }
+    return result;
+}
