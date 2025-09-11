@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+char* encryption(char* s) {
+    int len = strlen(s);
+    char* noSpaces = (char*)malloc(len + 1);
+    int idx = 0;
+    
+    for (int i = 0; i < len; i++) {
+        if (s[i] != ' ') {
+            noSpaces[idx++] = s[i];
+        }
+    }
+    noSpaces[idx] = '\0';
+    len = idx;
+    
+    int rows = (int)floor(sqrt(len));
+    int cols = (int)ceil(sqrt(len));
+    
+    if (rows * cols < len) {
+        rows++;
+    }
+    
+    char* result = (char*)malloc(len * 2);
+    result[0] = '\0';
+    
+    for (int col = 0; col < cols; col++) {
+        if (col > 0) {
+            strcat(result, " ");
+        }
+        
+        for (int row = 0; row < rows; row++) {
+            int pos = row * cols + col;
+            if (pos < len) {
+                int resultLen = strlen(result);
+                result[resultLen] = noSpaces[pos];
+                result[resultLen + 1] = '\0';
+            }
+        }
+    }
+    
+    free(noSpaces);
+    return result;
+}
+
+int main() {
+    char s[10000];
+    fgets(s, sizeof(s), stdin);
+    
+    int len = strlen(s);
+    if (len > 0 && s[len - 1] == '\n') {
+        s[len - 1] = '\0';
+    }
+    
+    char* encrypted = encryption(s);
+    printf("%s\n", encrypted);
+    
+    free(encrypted);
+    return 0;
+}
