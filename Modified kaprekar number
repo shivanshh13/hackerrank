@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <stdlib.h>
+
+int main() {
+    long long p, q;
+    scanf("%lld %lld", &p, &q);
+    int found = 0;
+    for (long long i = p; i <= q; i++) {
+        long long sq = i * i;
+        char s[30];
+        sprintf(s, "%lld", sq);
+        int len = strlen(s);
+        int d = (int)log10(i) + 1;
+        char left[30] = "0", right[30] = "0";
+        int split = len - d;
+        if (split > 0) strncpy(left, s, split);
+        left[split > 0 ? split : 0] = '\0';
+        strcpy(right, s + split);
+        long long l = atoll(left);
+        long long r = atoll(right);
+        if (l + r == i) {
+            if (found) printf(" ");
+            printf("%lld", i);
+            found = 1;
+        }
+    }
+    if (!found) printf("INVALID RANGE");
+    return 0;
+}
