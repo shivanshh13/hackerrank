@@ -1,0 +1,94 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <map>
+
+// Define the mask constants
+const int ALL_DIGITS_MASK = (1 << 10) - 1; // 1023 (0b1111111111)
+const int BITMASK_MAX = 1024;
+
+/**
+ * @brief Calculates the number of winning pairs of lottery tickets.
+ * * A winning pair is two distinct tickets whose combined digits include 0 through 9.
+ * * @param tickets A vector of strings, where each string is a ticket ID.
+ * @return long The total number of winning pairs.
+ */
+long winningLotteryTicket(const std::vector<std::string>& tickets) {
+    
+    // Use an array to store the frequency of each unique bitmask.
+    // Index i holds the count of tickets whose digits set is represented by bitmask i.
+    long bitmask_cnt[BITMASK_MAX] = {0};
+
+    // 1. Convert each ticket to its unique bitmask and count its frequency
+    for (const std::string& ticket : tickets) {
+        int mask = 0;
+        
+        // Iterate through the digits of the current ticket
+        for (char c : ticket) {
+            // Calculate the digit value (0-9)
+            int digit = c - '0';
+            
+            // Set the corresponding bit
+            mask |= (1 << digit);
+        }
+        
+        // Increment the count for this specific bitmask
+        bitmask_cnt[mask]++;
+    }
+
+    long winning_pairs = 0;
+
+    // 2. Iterate through all possible pairs of bitmasks (i, j)
+    for (int i = 0; i < BITMASK_MAX; ++i) {
+        // Skip bitmasks that were not found in the input tickets
+        if (bitmask_cnt[i] == 0) continue;
+
+        // Start j from i to check all unique pairs (i, j) without double counting
+        for (int j = i; j < BITMASK_MAX; ++j) {
+            // Skip bitmasks that were not found
+            if (bitmask_cnt[j] == 0) continue;
+
+            // Check if the combination of the two masks covers ALL digits (0-9)
+            if ((i | j) == ALL_DIGITS_MASK) {
+                
+                // Case A: The two bitmasks are the same (i == j)
+                if (i == j) {
+                    // We must count pairs from the same group of N tickets: N * (N - 1) / 2
+                    long n = bitmask_cnt[i];
+                    winning_pairs += n * (n - 1) / 2;
+                } 
+                // Case B: The two bitmasks are different (i != j)
+                else {
+                    // Number of pairs is the product of their counts
+                    winning_pairs += bitmask_cnt[i] * bitmask_cnt[j];
+                }
+            }
+        }
+    }
+
+    return winning_pairs;
+}
+
+// Main function structure for HackerRank I/O
+int main() {
+    // Fast I/O
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    int n;
+    // Read the number of tickets
+    if (!(std::cin >> n)) return 0;
+
+    // Read all tickets into a vector of strings
+    std::vector<std::string> tickets(n);
+    for (int i = 0; i < n; ++i) {
+        std::cin >> tickets[i];
+    }
+
+    // Solve and print the result
+    long result = winningLotteryTicket(tickets);
+    std::cout << result << "\n";
+
+    return 0;
+}
