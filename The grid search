@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Helper function to check if the pattern P matches the grid G 
+// starting at row 'r_start' and column 'c_start'
+int check_match(int R, int C, char G[R][C+1], int r, int c, char P[r][c+1], int r_start, int c_start) {
+    // R, C: Grid dimensions
+    // G: Grid
+    // r, c: Pattern dimensions
+    // P: Pattern
+    // r_start, c_start: Starting coordinates in G to check the match
+
+    // Check if the pattern rows match the corresponding grid rows
+    for (int i = 0; i < r; i++) {
+        // G[r_start + i] is the row in the grid
+        // P[i] is the row in the pattern
+        
+        // The c_start is the starting column in the grid row
+        // c is the length of the pattern row
+        // We use strncmp to compare exactly 'c' characters
+        if (strncmp(&G[r_start + i][c_start], P[i], c) != 0) {
+            return 0; // Mismatch found
+        }
+    }
+    
+    return 1; // Full match found
+}
+
+// Main function to search for the pattern in the grid
+char* gridSearch(int R, int C, char G[R][C+1], int r, int c, char P[r][c+1]) {
+    // R, C: Grid dimensions (rows, columns)
+    // G: Grid array of strings
+    // r, c: Pattern dimensions (rows, columns)
+    // P: Pattern array of strings
+
+    // The pattern can start at any row from 0 up to R - r
+    for (int r_start = 0; r_start <= R - r; r_start++) {
+        // The pattern can start at any column from 0 up to C - c
+        for (int c_start = 0; c_start <= C - c; c_start++) {
+            
+            // Check if the first row of the pattern matches the corresponding
+            // substring in the current grid row G[r_start].
+            // This is an optimization: if the first row doesn't match, 
+            // no need to check the remaining pattern rows.
+            if (strncmp(&G[r_start][c_start], P[0], c) == 0) {
+                // If the first row matches, check the rest of the pattern
+                if (check_match(R, C, G, r, c, P, r_start, c_start)) {
+                    // Pattern found
+                    return "YES";
+                }
+            }
+        }
+    }
+
+    // Pattern not found after checking all possible start positions
+    return "NO";
+}
+
+// Function to handle reading input and calling gridSearch for test cases
+void solve_test_case() {
+    int R, C;
+    scanf("%d %d", &R, &C);
+
+    // Dynamic allocation for the Grid G (R rows, C columns + 1 for null terminator)
+    // The problem constraints are small enough for stack allocation in some environments, 
+    // but dynamic allocation is more robust for general competitive programming.
+    // However, since the problem implies a function signature and the usage of 
+    // "string G[R]: the grid to search", we'll use Variable Length Arrays (VLA)
+    // which is a feature in C99, mimicking the input structure. 
+    // In many environments, the VLA size can be limited, so for a robust solution, 
+    // a single block of memory would be better, but we stick to the VLA style 
+    // for simplicity and adherence to the conceptual input.
+    char G[R][C + 1];
+    for (int i = 0; i < R; i++) {
+        scanf("%s", G[i]);
+    }
+
+    int r, c;
+    scanf("%d %d", &r, &c);
+
+    // Dynamic allocation for the Pattern P (r rows, c columns + 1 for null terminator)
+    char P[r][c + 1];
+    for (int i = 0; i < r; i++) {
+        scanf("%s", P[i]);
+    }
+
+    char* result = gridSearch(R, C, G, r, c, P);
+    printf("%s\n", result);
+}
+
+// Main function for execution
+int main() {
+    // T is the number of test cases
+    int T;
+    scanf("%d", &T);
+
+    while (T--) {
+        solve_test_case();
+    }
+
+    return 0;
+}
