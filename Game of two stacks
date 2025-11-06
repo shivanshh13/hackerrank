@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+long long max(long long a, long long b) {
+    return (a > b) ? a : b;
+}
+
+int twoStacks(int maxSum, int a_count, int* a, int b_count, int* b) {
+    long long current_sum = 0;
+    int count = 0;
+    int max_score = 0;
+    int i = 0;
+    int j = 0;
+
+    // 1. Maximize score only from stack 'a'
+    while (i < a_count && current_sum + a[i] <= maxSum) {
+        current_sum += a[i];
+        i++;
+    }
+    count = i;
+    max_score = count;
+
+    // 2. Iterate through stack 'b' and try to combine with 'a'
+    // 'i' is now the count of elements taken from 'a'
+    for (j = 0; j < b_count; j++) {
+        current_sum += b[j];
+        count++;
+
+        // If the sum exceeds maxSum, remove elements from the end of the selection from 'a'
+        while (current_sum > maxSum && i > 0) {
+            i--; // Decrease count from 'a'
+            current_sum -= a[i]; // Remove the last taken element from 'a'
+            count--;
+        }
+
+        // If after removing all elements from 'a' the sum is still too large,
+        // we can't take any more from 'b' and should break.
+        if (current_sum > maxSum) {
+             break;
+        }
+
+        // Update the maximum score
+        max_score = max(max_score, count);
+    }
+
+    return max_score;
+}
+
+int main() {
+    int g;
+    // Read the number of games
+    if (scanf("%d", &g) != 1) return 1;
+
+    while (g--) {
+        int n, m, maxSum;
+        // Read n, m, and maxSum
+        if (scanf("%d %d %d", &n, &m, &maxSum) != 3) return 1;
+
+        int* a = (int*)malloc(n * sizeof(int));
+        int* b = (int*)malloc(m * sizeof(int));
+
+        // Read stack a
+        for (int i = 0; i < n; i++) {
+            if (scanf("%d", &a[i]) != 1) {
+                free(a); free(b); return 1;
+            }
+        }
+
+        // Read stack b
+        for (int i = 0; i < m; i++) {
+            if (scanf("%d", &b[i]) != 1) {
+                free(a); free(b); return 1;
+            }
+        }
+
+        int result = twoStacks(maxSum, n, a, m, b);
+        printf("%d\n", result);
+
+        free(a);
+        free(b);
+    }
+
+    return 0;
+}
