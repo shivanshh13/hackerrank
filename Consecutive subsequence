@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+void solve() {
+    int n, k;
+    if (scanf("%d %d", &n, &k) != 2) return;
+
+    // Stores the frequency of each remainder (0 to k-1) encountered in the prefix sums.
+    // K is at most 100.
+    int remainder_counts[100] = {0}; 
+    
+    // The total count can be up to 10^6 * 10^6 / 2, so long long is required.
+    long long total_count = 0;
+    
+    // The prefix sum P[0] = 0, so the remainder 0 occurs once initially.
+    remainder_counts[0] = 1;
+    
+    int current_remainder = 0;
+    
+    for (int i = 0; i < n; i++) {
+        int a_i;
+        if (scanf("%d", &a_i) != 1) return;
+        
+        current_remainder = (current_remainder + a_i) % k;
+        
+        // If P[j] mod K == P[i] mod K, then the subsequence is divisible by K.
+        // We count how many times the current_remainder (P[j] mod K) has appeared before (P[0] to P[j-1]).
+        total_count += remainder_counts[current_remainder];
+        
+        remainder_counts[current_remainder]++;
+    }
+    
+    printf("%lld\n", total_count);
+}
+
+int main() {
+    int t;
+    if (scanf("%d", &t) != 1) return 1;
+
+    while (t--) {
+        solve();
+    }
+
+    return 0;
+}
