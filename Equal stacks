@@ -1,0 +1,73 @@
+#include <vector>
+#include <numeric>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+// The function signature remains the same as required by the problem
+int equalStacks(vector<int> h1, vector<int> h2, vector<int> h3) {
+    // Use long long for sums to avoid potential overflow, as a sum of many ints can exceed INT_MAX
+    long long H1 = accumulate(h1.begin(), h1.end(), 0LL);
+    long long H2 = accumulate(h2.begin(), h2.end(), 0LL);
+    long long H3 = accumulate(h3.begin(), h3.end(), 0LL);
+
+    // FIX: Change index variables to size_t to match vector::size() return type
+    size_t i1 = 0;
+    size_t i2 = 0;
+    size_t i3 = 0;
+
+    while (!(H1 == H2 && H2 == H3)) {
+        // FIX: The condition now compares size_t (iX) with size_t (hX.size()), resolving the warning
+        if (i1 == h1.size() || i2 == h2.size() || i3 == h3.size()) {
+            return 0; // Impossible to equalize if one stack is empty
+        }
+
+        // Greedy choice: Remove from the tallest stack
+        if (H1 >= H2 && H1 >= H3) {
+            H1 -= h1[i1];
+            i1++;
+        } else if (H2 >= H1 && H2 >= H3) {
+            H2 -= h2[i2];
+            i2++;
+        } else { // H3 is the tallest
+            H3 -= h3[i3];
+            i3++;
+        }
+    }
+
+    // Since H1, H2, and H3 are equal here, return any of them as an int.
+    return (int)H1;
+}
+
+// FIX: Added a main function to resolve the linker error ("undefined reference to 'main'")
+int main() {
+    int n1, n2, n3;
+    // Read the sizes n1, n2, n3
+    if (!(cin >> n1 >> n2 >> n3)) return 1;
+
+    vector<int> h1(n1);
+    vector<int> h2(n2);
+    vector<int> h3(n3);
+
+    // Read elements for h1
+    for (int i = 0; i < n1; ++i) {
+        if (!(cin >> h1[i])) return 1;
+    }
+
+    // Read elements for h2
+    for (int i = 0; i < n2; ++i) {
+        if (!(cin >> h2[i])) return 1;
+    }
+
+    // Read elements for h3
+    for (int i = 0; i < n3; ++i) {
+        if (!(cin >> h3[i])) return 1;
+    }
+
+    // Call the function and print the result
+    int result = equalStacks(h1, h2, h3);
+    cout << result << endl;
+
+    return 0;
+}
